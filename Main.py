@@ -30,6 +30,24 @@ class Programa():
 
 	def __init__(self):
 		self.inicio()
+
+	def menu_interfaces(self):
+		cls()
+		self.get_subred()
+		print('Herramienta automatica de escaneos ({})'.format(self.mi_ip))
+		print('')
+		print('\tElegir objetivo')
+		cont=0
+		for interfaz in self.interfaces_mi_pc:
+			seleccionado=' '
+			for inter in self.interfaces_selec:
+				if inter == cont:
+					seleccionado = '*'
+			print('\t\t{} [ {} ] - {}'.format(cont, seleccionado, interfaz))
+			cont+=1
+		print('')
+		# Poner continuar solo si está seleccionado alguno
+		print('\t\t{} - Continuar'.format(cont))
 	
 	def menu_parametros(self, error=False):
 		cls()
@@ -40,27 +58,6 @@ class Programa():
 		if error:
 			print('Has elegido una opción incorrecta')
 
-	def menu_interfaces(self):
-		cls()
-		self.get_subred()
-		print('Herramienta automatica de escaneos ({})'.format(self.mi_ip))
-		print('')
-		print('\tElegir objetivo')
-		cont=0
-		seleccionado=' '
-		for interfaz in self.interfaces_mi_pc:
-			print('\t\t{} [ {} ] - {}'.format(cont, seleccionado, interfaz))
-			cont+=1
-		print('')
-		# Poner continuar solo si está seleccionado alguno
-		print('\t\t{} - Continuar'.format(cont))
-
-	def get_my_ip(self):
-		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		s.connect(("8.8.8.8", 80))
-		self.mi_ip = s.getsockname()[0]
-		s.close()
-
 	def funcionesNmap(self):
 		cont=0
 		for param in self.parametros:
@@ -70,6 +67,12 @@ class Programa():
 					seleccionado = '*'
 			print('\t{} [ {} ] - ({}) {}'.format(cont, seleccionado, param, self.parametros[param]))
 			cont+=1
+
+	def get_my_ip(self):
+		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		s.connect(("8.8.8.8", 80))
+		self.mi_ip = s.getsockname()[0]
+		s.close()
 
 	def get_subred(self):
 		self.interfaces_mi_pc = []
@@ -98,28 +101,36 @@ class Programa():
 		else:
 			print('Seleccion incorrecta')
 
-	def elegirObjetivo(self):
-		seleccion = self.seleccionEscaneo(self.menu_interfaces, self.interfaces_selec)
-		if seleccion == str(len(self.interfaces_mi_pc)):
-			pass
+	def elegirObjetivo(self, error=False):
+		cls()
+		self.get_subred()
+		msg_error=''
+		if error:
+			msg_error= 'Debes elegin una opción correcta'
+		seleccion = self.seleccionEscaneo(self.menu_interfaces, self.interfaces_selec, error, msg_error)
+		if str(seleccion) in str(len(self.interfaces_mi_pc)):
+			if not self.interfaces_selec:
+				self.elegirObjetivo(True)
+			else:
+				pass
 		else:
 			self.seleccion_param(seleccion, self.interfaces_mi_pc, self.interfaces_selec)
 			self.elegirObjetivo()
 		
-	def seleccionEscaneo(self, menu, lista_seleccionados):
+	def seleccionEscaneo(self, menu, lista_seleccionados, error=False, msg_error=''):
 		menu.__call__()
 		seleccion =''
 		try:
 			seleccion = input('Selecciona una opción: ')
 			return int(seleccion)
-		except ValueError:
+		except:
 			if seleccion.lower() == 'scan':
 				pass
 			else: 
 				menu.__call__(True)
 		try:
-			self.seleccion_param(seleccion_parametro, self.parametros, lista_seleccionados)
-			self.seleccionEscaneo()
+			self.seleccion_param(seleccion, self.parametros, lista_seleccionados)
+			self.seleccionEscaneo(menu, lista_seleccionados)
 		except:
 			self.seleccionEscaneo(menu, lista_seleccionados)
 
@@ -129,7 +140,7 @@ class Programa():
 		self.seleccionEscaneo(self.menu_parametros, self.parametros_selec)
 
 def cls():
-    #os.system('cls' if os.name=='nt' else 'clear')
-	pass
+    os.system('cls' if os.name=='nt' else 'clear')
+	#pass
 
 programa = Programa()
