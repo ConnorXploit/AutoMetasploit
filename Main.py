@@ -88,7 +88,7 @@ class Programa():
 
 	# Modular - Llamado por elegirObjetivo y seleccion escaneo
 	def seleccion_param(self, seleccion, opciones, listaSelect):
-		if seleccion >= 0 and seleccion <= len(opciones)-1:
+		if seleccion >= 0 and seleccion <= len(opciones):
 			borrado=False
 			for param in listaSelect:
 				if seleccion == param:
@@ -101,7 +101,7 @@ class Programa():
 		else:
 			print('Seleccion incorrecta')
 
-	def elegirObjetivo(self, error=False):
+	def elegirObjetivo(self, error=False): # Interfaces de red
 		cls()
 		self.get_subred()
 		msg_error=''
@@ -117,6 +117,24 @@ class Programa():
 			self.seleccion_param(seleccion, self.interfaces_mi_pc, self.interfaces_selec)
 			self.elegirObjetivo()
 		
+	def elegirParametrosNmap(self, error=False):
+		cls()
+		msg_error=''
+		if error:
+			msg_error= 'Debes elegin una opción correcta'
+		seleccion = self.seleccionEscaneo(self.menu_parametros, self.parametros_selec, error, msg_error)
+		cont=0
+		for p in self.parametros:
+			cont+=1
+		if str(seleccion) in str(cont):
+			if not self.parametros_selec:
+				self.elegirParametrosNmap(True)
+			else:
+				pass
+		else:
+			self.seleccion_param(seleccion, self.parametros, self.parametros_selec)
+			self.elegirParametrosNmap()
+
 	def seleccionEscaneo(self, menu, lista_seleccionados, error=False, msg_error=''):
 		menu.__call__()
 		seleccion =''
@@ -125,7 +143,7 @@ class Programa():
 			return int(seleccion)
 		except:
 			if seleccion.lower() == 'scan':
-				pass
+				print('A ESCANEAAR')
 			else: 
 				menu.__call__(True)
 		try:
@@ -137,10 +155,10 @@ class Programa():
 	def inicio(self):
 		self.get_my_ip()
 		self.elegirObjetivo()
-		self.seleccionEscaneo(self.menu_parametros, self.parametros_selec)
+		self.elegirParametrosNmap()
 
 def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
-	#pass
+    #os.system('cls' if os.name=='nt' else 'clear')
+	pass
 
 programa = Programa()
