@@ -1,0 +1,2 @@
+class Dispositivo():
+	pass
