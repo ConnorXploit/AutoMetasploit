@@ -1,7 +1,7 @@
 import os
 import sys
 import socket
-from core.Config import Config, ConfigErrores
+from core.Config import Config, ConfigInterfaces, ConfigErrores
 #
 # Menus para la shell llamados desde __seleccionar_menu() pasado como parametro
 #
@@ -17,14 +17,11 @@ class Menu:
 
 	def __titulo(self):
 		print('')
-		print('{} ({})'.format(self.titulo, self.mi_ip))
+		print('{titulo} ({ip})'.format(titulo=self.titulo, ip=self.mi_ip))
 		print('')
 
 	def __getip(self):
-		s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		s.connect(("8.8.8.8", 80))
-		self.mi_ip = s.getsockname()[0]
-		s.close()
+		self.mi_ip = ConfigInterfaces.mi_ip
 
 	def __menu(self, parametros, parametros_selec, error=False, msg_error=''):
 		cls()
@@ -38,25 +35,29 @@ class Menu:
 			seleccionado=' '
 			for p in parametros_selec:
 				if p == cont:
-					seleccionado = '*'
+					seleccionado = '{simbolo_selec}'.format(simbolo_selec=self.config.SIMBOLO_SELEC)
 			try:
-				print('\t{} [ {} ] - ({}) {}'.format(cont, seleccionado, param, parametros[param]))
+				print('\t{cont} [ {seleccionado} ] - ({param}) {definicion}'.format(cont=cont, seleccionado=seleccionado, param=param, definicion=parametros[param]))
 			except:
-				print('\t\t{} [ {} ] - {}'.format(cont, seleccionado, param))
+				print('\t\t{cont} [ {seleccionado} ] - {param}'.format(cont=cont, seleccionado=seleccionado, param=param))
 			cont+=1
 		print('')
 		if error:
 			if msg_error == '':
 				msg_error = self.configErrores.NO_CONTROLADO
-			print('\t[{}] - {}'.format(self.configErrores.ERROR, msg_error))
+			print('\t[{error}] - {msg_error}'.format(error=self.configErrores.ERROR, msg_error=msg_error))
 			print('')
-		print('\t\t{} - {}'.format(cont, self.config.CONTINUAR))
+		print('\t\t{cont} - {continuar}'.format(cont=cont, continuar=self.config.CONTINUAR))
 
 	def __seleccion_param(self, seleccion, opciones, listaSelect):
 		cont=0
 		for op in opciones:
 			cont+=1
-		if int(seleccion) >= 0 and int(seleccion) <= cont:
+		try:
+			seleccion = int(seleccion)
+		except:
+			pass
+		if isinstance(seleccion, int) and int(seleccion) >= 0 and int(seleccion) <= cont:
 			borrado=False
 			for param in listaSelect:
 				if seleccion == param:
@@ -76,14 +77,14 @@ class Menu:
 		msg_error=''
 		error=False
 		try:
-			seleccion = input('{}: '.format(self.config.SELECCIONA))
-			return int(seleccion)
+			seleccion = input('{selecciona}: '.format(selecciona=self.config.SELECCIONA))
+			return seleccion
+			seleccion = int(seleccion)
 		except KeyboardInterrupt:
 			self.salir()
 		except ValueError:
-			msg_error = '{}'.format(self.configErrores.SELEC_INC)
+			msg_error = '{selec_inc}'.format(selec_inc=self.configErrores.SELEC_INC)
 			error = True
-			self.__menu(parametros=parametros, parametros_selec=lista_seleccionados, error=error, msg_error=msg_error)
 		try:
 			msg_error = self.__seleccion_param(seleccion=seleccion, opciones=parametros, listaSelect=lista_seleccionados)
 			if msg_error != '':
@@ -101,7 +102,7 @@ class Menu:
 			cont+=1
 		if str(seleccion) in str(cont):
 			if not parametros_selec:
-				msg_error = '{}'.format(self.configErrores.PARAMETRO_OBLIGATORIO)
+				msg_error = '{param_obligatorio}'.format(param_obligatorio=self.configErrores.PARAMETRO_OBLIGATORIO)
 				error = True
 				self.elegirOpcionMenu(parametros=parametros, parametros_selec=parametros_selec, param_obligatorios=param_obligatorios, error=error, msg_error=msg_error)
 			else:
@@ -117,8 +118,9 @@ class Menu:
 	def salir(self):
 		cls()
 		print('')
-		print('{}'.format(self.config.SALIR))
+		print('{salir}'.format(salir=self.config.SALIR))
 		sys.exit()
 
 def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
+    #os.system('cls' if os.name=='nt' else 'clear')
+	pass

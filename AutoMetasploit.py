@@ -33,8 +33,8 @@ class AutoMetasploit():
 		self.coreMenu = Menu()
 
 		# Configuracion Interfaces
-		self.mi_ip = self.interfaces.get_my_ip()
-		self.interfaces_mi_pc = self.interfaces.get_subred()
+		self.mi_ip = self.configInterfaces.mi_ip
+		self.interfaces_mi_pc = self.configInterfaces.interfaces_mi_pc
 		self.parametros_obligatorios_interfaces = self.configInterfaces.PARAMETROS_OBLIGATORIOS
 
 		# Configuracion Nmap

@@ -1,16 +1,20 @@
 import socket
 import netifaces
+
+from core.Config import ConfigInterfaces
+
 class Interfaces:
 
     def __init__(self):
-        pass
+        self.get_my_ip()
+        self.get_subred()
 
     def get_my_ip(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         self.mi_ip = s.getsockname()[0]
         s.close()
-        return self.mi_ip
+        ConfigInterfaces.mi_ip = self.mi_ip
 
     def get_subred(self):
         self.interfaces_mi_pc = []
@@ -23,4 +27,4 @@ class Interfaces:
                     self.interfaces_mi_pc.append('{}/{}'.format(ip, mascara_bin))
             except:
                 pass
-        return self.interfaces_mi_pc
+        ConfigInterfaces.interfaces_mi_pc = self.interfaces_mi_pc

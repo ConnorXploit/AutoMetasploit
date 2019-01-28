@@ -4,8 +4,8 @@ class Config:
     TITULO = 'Herramienta automatica de escaneos'
     CONTINUAR = 'Continuar'
     SELECCIONA = 'Selecciona una opción'
+    SIMBOLO_SELEC = '*'
     SALIR = 'Saliendo de AutoMetasploit...'
-    MODULO_FUNCION = {'interfaces':'elegirInterfaz', 'nmap':'elegirParametrosNmap'}
     
 class ConfigInterfaces:
     PARAMETROS_OBLIGATORIOS = True
