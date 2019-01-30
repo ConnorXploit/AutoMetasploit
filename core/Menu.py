@@ -132,4 +132,3 @@ class Menu:
 
 def cls():
     os.system('cls' if os.name=='nt' else 'clear')
-	#pass

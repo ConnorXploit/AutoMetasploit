@@ -1,6 +1,11 @@
 import nmap
 import multiprocessing as mp
 import socket
+import codecs
+import sys
+
+# Mi CORE
+from core.Config import Config
 
 def callback_escanear_red(host, scan_result):
 	print('------------------')
@@ -11,6 +16,7 @@ class Escaner():
 	def __init__(self, rango='192.168.1.0/24', params=''):
 		self.rango = rango
 		self.params = params
+		self.config = Config
 		self.output = mp.Queue() # Multiproceso
 		hosts = self.enumeracion_rapida()
 		#for host in hosts:
@@ -65,29 +71,39 @@ class Escaner():
 		for host in nm.all_hosts():
 			print('----------------------------------------------------')
 			print('Host : {} ({})'.format(host, nm[host].hostname()))
-			print('State : {}'.format(nm[host].state()))
-			for proto in nm[host].all_protocols():
-				print('----------')
-				print('Protocol : {}'.format(proto))
-				lport = nm[host][proto].keys()
-				for port in lport:
-					servicio = ''
-					if nm[host][proto][port]['state'] == 'open':
-						if proto == 'tcp':
+			if 'up' in nm[host].state():
+				for proto in nm[host].all_protocols():
+					print('----------')
+					print('Protocol : {}'.format(proto))
+					lport = nm[host][proto].keys()
+					for port in lport:
+						servicio = ''
+						if nm[host][proto][port]['state'] == 'open':
 							servicio = self.escanear_host_tcp_banner_grabbing(host, port)
-							if not servicio or servicio == '' or 'None' in servicio or servicio == None: # Si no devuelve banner
-								servicio = '-'
-						print ('puerto : {}\tservicio: {}'.format(port, servicio))
+							print('SERVICIO: {}'.format(servicio))
+							try:
+								if not servicio or servicio == '' or 'None' in servicio or servicio == None: # Si no devuelve banner
+									servicio = '-'
+							except:
+								pass
+							print ('puerto : {}\tservicio: {}'.format(port, servicio))
 
 	def escanear_host_tcp_banner_grabbing(self, host, port):
+		banner = ''
 		try:
-			conexion=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-			conexion.connect((host, port))
-			banner = conexion.recv(1024)
-			# Devolvemos decodificada para evitar b'' como string y quitamos el salto de línea posible
-			return str(banner.decode('utf-8').rstrip('\n'))
-		except:
-			return
+			conn = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+			conn.connect((host, port))
+			print('[+] Conexion con {}:{} valida'.format(host, str(port)))
+			conn.settimeout(60)
+			banner = conn.recv(1024)
+			return banner.strip()
+			#return codecs.encode(banner, 'hex_codec')
+			#return str(banner.decode('utf-8').rstrip('\n'))
+		except Exception as e:
+			print('[+] Conexion con {}:{} fallida: {}'.format(host, str(port), e))
+		finally:
+			conn.close()
+			return banner
 
 	def escanear_host_tcp(self, host):
 		pass
@@ -96,7 +112,19 @@ class Escaner():
 		pass
 
 	def __ejecutar_multiproceso__(self, procesos):
-		for p in procesos:
-			p.start()
-		for p in procesos:
-			p.join()
+		try:
+			for p in procesos:
+				p.start()
+			for p in procesos:
+				p.join()
+		except KeyboardInterrupt:
+			self.salir()
+
+	def salir(self):
+		cls()
+		print('')
+		print('{salir}'.format(salir=self.config.SALIR))
+		sys.exit()
+
+def cls():
+	os.system('cls' if os.name=='nt' else 'clear')

@@ -23,7 +23,7 @@ class ConfigNmap:
         '-T4': 'Agresivo',
         '-T5': 'Demente',
     }
-    FIJOS = ('-A', '-T3')
+    FIJOS = ('-sV', '-T4')
 
 class ConfigErrores:
     ERROR = 'ERROR'
