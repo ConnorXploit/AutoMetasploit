@@ -131,5 +131,5 @@ class Menu:
 		sys.exit()
 
 def cls():
-    #os.system('cls' if os.name=='nt' else 'clear')
-	pass
+    os.system('cls' if os.name=='nt' else 'clear')
+	#pass

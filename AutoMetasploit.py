@@ -92,12 +92,8 @@ class AutoMetasploit():
 		for p in procesos:
 			p.join()
 
-
-def cls():
-    #os.system('cls' if os.name=='nt' else 'clear')
-	pass
-
 if __name__ == '__main__':
 	script = AutoMetasploit()
 
 # TODO Segun configuracion deberia auto importar el orden lo los menus y automaticamente coger la configuracion el AutoMetasploit() en el inicio recursivamente segun los metodos publicos de cada modulo
+# TODO Solucionar que se cierren los multiprocesos al salir

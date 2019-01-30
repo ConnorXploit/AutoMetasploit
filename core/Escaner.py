@@ -13,15 +13,16 @@ class Escaner():
 		self.params = params
 		self.output = mp.Queue() # Multiproceso
 		hosts = self.enumeracion_rapida()
-		for host in hosts:
-			self.escanear_host_con_parametros(host, self.params)
+		#for host in hosts:
+		#	self.escanear_host_con_parametros(host, self.params)
 		procesos = []
 		for host in hosts:
-			self.escanear_host_con_parametros(host=self.rango, parametros=self.params)
+			#self.escanear_host_con_parametros(host=self.rango, parametros=self.params)
+			procesos.append(mp.Process(target=self.escanear_host_con_parametros, args=(host, self.params)))
 			#procesos.append(mp.Process(target=self.escanear_host_os, args=(host,)))
 			#procesos.append(mp.Process(target=self.escanear_host_name, args=(host,)))
 			#procesos.append(mp.Process(target=self.escanear_host_completo, args=(host,)))
-		#self.__ejecutar_multiproceso__(procesos)
+		self.__ejecutar_multiproceso__(procesos)
 
 	def enumeracion_rapida(self):
 		print('[*] - Enumerando rápidamente la red ({rango} {argumento})'.format(rango=self.rango, argumento='-sP'))
