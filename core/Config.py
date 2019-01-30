@@ -13,13 +13,26 @@ class ConfigInterfaces:
 class ConfigNmap:
     PARAMETROS_OBLIGATORIOS = True
     PARAMETROS = {
-		'-O':'Sistema Operativo', 
-		'-A': 'All', 
-		'-sV':'Version de Protocolos'
-	}
+        '-A': 'All',
+        '-O': 'Sistema Operativo', 
+        '-sV': 'Versión de Protocolos',
+        '-T0': 'Paranóico',
+        '-T1': 'Sigiloso',
+        '-T2': 'Delicado',
+        '-T3': 'Normal',
+        '-T4': 'Agresivo',
+        '-T5': 'Demente',
+    }
+    FIJOS = ('-A', '-T3')
 
 class ConfigErrores:
     ERROR = 'ERROR'
     NO_CONTROLADO = 'No controlado'
     SELEC_INC = 'Seleccion incorrecta'
     PARAMETRO_OBLIGATORIO = 'Debes seleccionar al menos una opcion del menu'
+
+def print_classes():
+    import sys, inspect
+    for name, obj in inspect.getmembers(sys.modules[__name__]):
+        if inspect.isclass(obj):
+            print(obj)

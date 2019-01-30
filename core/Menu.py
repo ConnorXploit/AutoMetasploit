@@ -23,13 +23,21 @@ class Menu:
 	def __getip(self):
 		self.mi_ip = ConfigInterfaces.mi_ip
 
-	def __menu(self, parametros, parametros_selec, error=False, msg_error=''):
+	def __menu(self, parametros, parametros_selec, predefinidos=[], error=False, msg_error=''):
 		cls()
 		self.__getip()
 		self.__titulo()
-		self.__opciones(parametros=parametros, parametros_selec=parametros_selec, error=error, msg_error=msg_error)
+		self.__opciones(parametros=parametros, parametros_selec=parametros_selec, predefinidos=predefinidos, error=error, msg_error=msg_error)
 
-	def __opciones(self, parametros, parametros_selec, error=False, msg_error=''):
+	def __opciones(self, parametros, parametros_selec, predefinidos=[], error=False, msg_error=''):
+		cont=0
+		# Importar predefinidos
+		for param in parametros:
+			for p in predefinidos:
+				if p == param:
+					parametros_selec.append(cont)
+			cont+=1
+		
 		cont=0
 		for param in parametros:
 			seleccionado=' '
@@ -71,8 +79,8 @@ class Menu:
 		else:
 			return self.configErrores.SELEC_INC
 
-	def __seleccionar_menu(self, parametros, lista_seleccionados, error=False, msg_error=''):
-		self.__menu(parametros=parametros, parametros_selec=lista_seleccionados, error=error, msg_error=msg_error)
+	def __seleccionar_menu(self, parametros, lista_seleccionados, predefinidos=[], error=False, msg_error=''):
+		self.__menu(parametros=parametros, parametros_selec=lista_seleccionados, predefinidos=predefinidos, error=error, msg_error=msg_error)
 		seleccion =''
 		msg_error=''
 		error=False
@@ -89,14 +97,15 @@ class Menu:
 			msg_error = self.__seleccion_param(seleccion=seleccion, opciones=parametros, listaSelect=lista_seleccionados)
 			if msg_error != '':
 				error = True
-			self.__seleccionar_menu(parametros=parametros, lista_seleccionados=lista_seleccionados, error=error, msg_error=msg_error)
+			self.__seleccionar_menu(parametros=parametros, lista_seleccionados=lista_seleccionados, predefinidos=predefinidos, error=error, msg_error=msg_error)
 		except:
-			self.__seleccionar_menu(parametros=parametros, lista_seleccionados=lista_seleccionados, error=error, msg_error=msg_error)
+			self.__seleccionar_menu(parametros=parametros, lista_seleccionados=lista_seleccionados, predefinidos=predefinidos, error=error, msg_error=msg_error)
 		
 
-	def elegirOpcionMenu(self, parametros, parametros_selec, param_obligatorios, error=False, msg_error=''):
+	def elegirOpcionMenu(self, parametros, parametros_selec, param_obligatorios, predefinidos=[], error=False, msg_error=''):
 		cls()
-		seleccion = self.__seleccionar_menu(parametros=parametros, lista_seleccionados=parametros_selec, error=error, msg_error=msg_error)
+		seleccion = self.__seleccionar_menu(parametros=parametros, lista_seleccionados=parametros_selec, predefinidos=predefinidos, error=error, msg_error=msg_error)
+		predefinidos = [] # Una vez importados, nos dan igual
 		cont=0
 		for p in parametros:
 			cont+=1
@@ -122,4 +131,5 @@ class Menu:
 		sys.exit()
 
 def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
+    #os.system('cls' if os.name=='nt' else 'clear')
+	pass

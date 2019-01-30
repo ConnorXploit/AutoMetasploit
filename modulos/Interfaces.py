@@ -24,7 +24,10 @@ class Interfaces:
                 mask=netifaces.ifaddresses(i)[netifaces.AF_INET][0]['netmask']
                 mascara_bin = sum([bin(int(x)).count('1') for x in mask.split('.')])
                 if ip not in '127.0.0.1':
-                    self.interfaces_mi_pc.append('{}/{}'.format(ip, mascara_bin))
+                    # IP a IP de Rango de Subred
+                    a, b, c, d = ip.split('.')
+                    ip_subred='{}.{}.{}.{}'.format(a, b, c, '0')
+                    self.interfaces_mi_pc.append('{}/{}'.format(ip_subred, mascara_bin))
             except:
                 pass
         ConfigInterfaces.interfaces_mi_pc = self.interfaces_mi_pc

@@ -1,4 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import os
+import multiprocessing as mp
 
 # Mi CORE
 from core import Config
@@ -25,11 +28,9 @@ class AutoMetasploit():
 		self.configNmap = Config.ConfigNmap
 		self.configErrores = Config.ConfigErrores
 
-		# Modulos
-		self.interfaces = Interfaces()
-
 	def __cargarParametros(self):
 		# Configuracion General
+		self.interfaces = Interfaces()
 		self.coreMenu = Menu()
 
 		# Configuracion Interfaces
@@ -40,13 +41,22 @@ class AutoMetasploit():
 		# Configuracion Nmap
 		self.parametros_nmap = self.configNmap.PARAMETROS
 		self.parametros_obligatorios_nmap = self.configNmap.PARAMETROS_OBLIGATORIOS
-		
-		# Cargamos un scanner de Nmap
-		self.scanner = Escaner(self.mi_ip)
+		self.parametros_predefinidos_nmap = self.configNmap.FIJOS
 
 		# Variables finales necesarias para conjugacion de datos
 		self.interfaces_selec = []
 		self.parametros_nmap_selec = []
+
+		self.output = mp.Queue() # Multiproceso
+
+	def get_parametros_seleccionador(self, lista, seleccionados):
+		lista_selec = []
+		cont=0
+		for param in lista:
+			if cont in seleccionados:
+				lista_selec.append(param)
+			cont+=1
+		return lista_selec
 
 	#
 	# Inicio del programa principal
@@ -54,15 +64,38 @@ class AutoMetasploit():
 	def __inicio(self):
 		self.elegirInterfaz()
 		self.elegirParametrosNmap()
+		self.iniciarEscaneo()
 
 	def elegirInterfaz(self):
-		self.coreMenu.elegirOpcionMenu(parametros=self.interfaces_mi_pc, parametros_selec=self.interfaces_selec, param_obligatorios=self.parametros_obligatorios_interfaces)
+		self.coreMenu.elegirOpcionMenu(
+			parametros=self.interfaces_mi_pc, 
+			parametros_selec=self.interfaces_selec, 
+			param_obligatorios=self.parametros_obligatorios_interfaces)
 		
 	def elegirParametrosNmap(self):
-		self.coreMenu.elegirOpcionMenu(parametros=self.parametros_nmap, parametros_selec=self.parametros_nmap_selec, param_obligatorios=self.parametros_obligatorios_nmap)
+		print("PARAMS:{}".format(self.parametros_predefinidos_nmap))
+		self.coreMenu.elegirOpcionMenu(
+			parametros=self.parametros_nmap, 
+			parametros_selec=self.parametros_nmap_selec, 
+			param_obligatorios=self.parametros_obligatorios_nmap, 
+			predefinidos=self.parametros_predefinidos_nmap)
+
+	def iniciarEscaneo(self):
+		interfaces_params = self.get_parametros_seleccionador(lista=self.interfaces_mi_pc, seleccionados=self.interfaces_selec)
+		nmap_params = self.get_parametros_seleccionador(lista=self.parametros_nmap, seleccionados=self.parametros_nmap_selec)
+		nmap_params = ' '.join(nmap_params)
+		procesos = []
+		for inter in interfaces_params:
+			procesos.append(mp.Process(target=Escaner, args=(inter, nmap_params)))
+		for p in procesos:
+			p.start()
+		for p in procesos:
+			p.join()
+
 
 def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
+    #os.system('cls' if os.name=='nt' else 'clear')
+	pass
 
 if __name__ == '__main__':
 	script = AutoMetasploit()
