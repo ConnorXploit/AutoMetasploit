@@ -22,6 +22,7 @@ class ConfigNmap:
         '-T3': 'Normal',
         '-T4': 'Agresivo',
         '-T5': 'Demente',
+        '--script=banner': 'Banner Grabbing'
     }
     FIJOS = ('-A', '-T3')
 

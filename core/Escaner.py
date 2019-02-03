@@ -2,6 +2,10 @@ import nmap
 import multiprocessing as mp
 import socket
 
+import traceback
+
+from flask import jsonify
+
 def callback_escanear_red(host, scan_result):
 	print('------------------')
 	print(host, scan_result)
@@ -11,6 +15,8 @@ class Escaner():
 	def __init__(self, rango='192.168.1.0/24', params=''):
 		self.rango = rango
 		self.params = params
+	
+	def escanear_todo(self):
 		self.output = mp.Queue() # Multiproceso
 		hosts = self.enumeracion_rapida()
 		#for host in hosts:
@@ -61,33 +67,49 @@ class Escaner():
 	def escanear_host_con_parametros(self, host, parametros):
 		print('[*] - Escaneo con Parámetros ({host} {param})'.format(host=host, param=parametros))
 		nm = nmap.PortScanner()
-		res = nm.scan(host, arguments=parametros)
-		for host in nm.all_hosts():
-			print('----------------------------------------------------')
-			print('Host : {} ({})'.format(host, nm[host].hostname()))
-			print('State : {}'.format(nm[host].state()))
-			for proto in nm[host].all_protocols():
-				print('----------')
-				print('Protocol : {}'.format(proto))
-				lport = nm[host][proto].keys()
-				for port in lport:
-					servicio = ''
-					if nm[host][proto][port]['state'] == 'open':
-						if proto == 'tcp':
-							servicio = self.escanear_host_tcp_banner_grabbing(host, port)
-							if not servicio or servicio == '' or 'None' in servicio or servicio == None: # Si no devuelve banner
-								servicio = '-'
-						print ('puerto : {}\tservicio: {}'.format(port, servicio))
+		nm.scan(hosts=host, arguments=parametros)
+		datos_completo = []
+		for h in nm.all_hosts():
+			datos = []
+			nombre_host = nm[h].hostname()
+			if nombre_host:
+				datos.append({'nombre' : nombre_host})
+
+			state = nm[h].state()
+			if not 'up' in state:
+				datos.append({'estado' : 'apagado'})
+			else:
+				for proto in nm[h].all_protocols():
+					lport = nm[h][proto].keys()
+					puertos_abiertos = []
+					try:
+						for port in lport:
+							servicio = '-'
+							if nm[h][proto][port]['state'] == 'open':
+								if proto == 'tcp':
+									servicio = self.escanear_host_tcp_banner_grabbing(host=h, port=port)
+								puertos_abiertos.append({port : servicio})
+						datos.append({proto : puertos_abiertos})
+					except Exception as e:
+						datos.append({'error' : 'Algo ha salido mal'})
+			datos_completo.append({h : datos})
+		return jsonify(datos_completo)
 
 	def escanear_host_tcp_banner_grabbing(self, host, port):
+		banner = ''
 		try:
-			conexion=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-			conexion.connect((host, port))
+			conexion=socket.socket()
+			conexion.settimeout(30)
+			conexion.connect((host, int(port)))
 			banner = conexion.recv(1024)
 			# Devolvemos decodificada para evitar b'' como string y quitamos el salto de línea posible
-			return str(banner.decode('utf-8').rstrip('\n'))
-		except:
-			return
+			banner = str(banner, 'utf-8', 'ignore').split('\n')[0].rstrip('\r')
+			conexion.shutdown(1)
+			conexion.close()
+			#return banner
+		except Exception as e:
+			banner = '?'
+		return banner
 
 	def escanear_host_tcp(self, host):
 		pass

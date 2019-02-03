@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 import os
 import multiprocessing as mp
+import argparse
+
+import traceback
 
 # Mi CORE
 from core import Config
@@ -11,12 +14,16 @@ from core.Dispositivo import Dispositivo
 
 from modulos.Interfaces import Interfaces
 
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
+
 class AutoMetasploit():
 	
 	def __init__(self):
 		self.__cargarConfiguracion()
 		self.__cargarParametros()
-		self.__inicio()
+		#self.__inicio()
 
 	#
 	# Toda la configuracion se carga aqui en variables de clase
@@ -73,7 +80,6 @@ class AutoMetasploit():
 			param_obligatorios=self.parametros_obligatorios_interfaces)
 		
 	def elegirParametrosNmap(self):
-		print("PARAMS:{}".format(self.parametros_predefinidos_nmap))
 		self.coreMenu.elegirOpcionMenu(
 			parametros=self.parametros_nmap, 
 			parametros_selec=self.parametros_nmap_selec, 
@@ -92,8 +98,47 @@ class AutoMetasploit():
 		for p in procesos:
 			p.join()
 
-if __name__ == '__main__':
+@app.route('/')
+def index():
 	script = AutoMetasploit()
+	print('Iniciando AutoMetasploit Web: http://localhost:5000/')
+	return render_template('index.html')
+
+@app.route('/nmap', methods=['POST'])
+def nmap():
+	try:
+		ip = request.args.get('ip')
+		params = request.args.get('params')
+		metodo = request.args.get('metodo')
+		if ip != '':
+			escaner = Escaner(ip, params)
+			if metodo == 'enumeracion_rapida':
+				hosts = escaner.enumeracion_rapida()
+			elif metodo == 'escanear_host_completo':
+				hosts = escaner.escanear_host_completo(host=ip)
+			elif metodo == 'escanear_host_con_parametros':
+				hosts = escaner.escanear_host_con_parametros(host=ip, parametros=params)
+			elif metodo == 'escanear_host_name':
+				hosts = escaner.escanear_host_name(host=ip)
+			elif metodo == 'escanear_host_os':
+				hosts = escaner.escanear_host_os(host=ip)
+			elif metodo == 'escanear_host_tcp':
+				hosts = escaner.escanear_host_tcp(host=ip)
+			elif metodo == 'escanear_host_udp':
+				hosts = escaner.escanear_host_udp(host=ip)
+			elif metodo == 'escanear_todo':
+				hosts = escaner.escanear_todo()
+			else:
+				hosts = {'error_else_2' : 'Metodo no definido'}
+			return hosts
+		else:
+			return jsonify({"error_else_1" : "Falta la ip!"})
+	except Exception as e:
+		traceback.print_exc()
+		return jsonify({"error_except_1" : str(e)})
+
+if __name__ == '__main__':
+	app.run(debug=False, threaded=True)
 
 # TODO Segun configuracion deberia auto importar el orden lo los menus y automaticamente coger la configuracion el AutoMetasploit() en el inicio recursivamente segun los metodos publicos de cada modulo
 # TODO Solucionar que se cierren los multiprocesos al salir
