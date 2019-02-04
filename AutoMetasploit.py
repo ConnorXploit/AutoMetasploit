@@ -107,9 +107,14 @@ def index():
 @app.route('/nmap', methods=['POST'])
 def nmap():
 	try:
-		ip = request.args.get('ip')
-		params = request.args.get('params')
-		metodo = request.args.get('metodo')
+		try:
+			ip = request.form['rangoIP']
+			params = request.form['params']
+			metodo = request.form['metodo']
+		except:
+			ip = request.args.get('rangoIP')
+			params = request.args.get('params')
+			metodo = request.args.get('metodo')
 		if ip != '':
 			escaner = Escaner(ip, params)
 			if metodo == 'enumeracion_rapida':

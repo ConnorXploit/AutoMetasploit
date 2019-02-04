@@ -5,14 +5,15 @@ $(document).ready(function() {
 		$('#successAlert').hide();
 		$('#errorAlert').hide();
 		rangoIP=$('#rangoIPInput').val()
+		params=$('#parametros').val()
 		meth=$('input[name=metodo]:checked', '#formInfoGath').val()
 		$('#infoAlert').text("Cargando: " + meth).show();
 		if(meth == 'all'){
 			metodos = ["enumeracion_rapida","escanear_host_completo","escanear_host_con_parametros","escanear_host_name","escanear_host_os","escanear_host_tcp","escanear_host_udp","escanear_todo"];
 			for(m in metodos)
-				callPython(rangoIP, metodos[m])
+				callPython(rangoIP, params, metodos[m])
 		} else {
-			callPython(rangoIP, meth)
+			callPython(rangoIP, params, meth)
 		}
 		event.preventDefault();
 
@@ -21,7 +22,7 @@ $(document).ready(function() {
 	function callPython(rangoIP, parametros, metodo){
 		$.ajax({
 			data : {
-				ip : rangoIP,
+				rangoIP : rangoIP,
 				params : parametros,
 				metodo : metodo
 			},
