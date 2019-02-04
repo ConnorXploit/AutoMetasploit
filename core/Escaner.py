@@ -1,6 +1,7 @@
 import nmap
 import multiprocessing as mp
 import socket
+import json
 
 import traceback
 
@@ -12,23 +13,19 @@ def callback_escanear_red(host, scan_result):
 
 class Escaner():
 
-	def __init__(self, rango='192.168.1.0/24', params=''):
+	def __init__(self, rango='192.168.1.0/24', params='-sV -T4'):
 		self.rango = rango
 		self.params = params
 	
 	def escanear_todo(self):
 		self.output = mp.Queue() # Multiproceso
 		hosts = self.enumeracion_rapida()
-		#for host in hosts:
-		#	self.escanear_host_con_parametros(host, self.params)
-		procesos = []
+		datos = []
 		for host in hosts:
-			#self.escanear_host_con_parametros(host=self.rango, parametros=self.params)
-			procesos.append(mp.Process(target=self.escanear_host_con_parametros, args=(host, self.params)))
-			#procesos.append(mp.Process(target=self.escanear_host_os, args=(host,)))
-			#procesos.append(mp.Process(target=self.escanear_host_name, args=(host,)))
+			datos.append(self.escanear_host_con_parametros(host, self.params))
 			#procesos.append(mp.Process(target=self.escanear_host_completo, args=(host,)))
-		self.__ejecutar_multiproceso__(procesos)
+		#self.__ejecutar_multiproceso__(procesos)
+		return datos
 
 	def enumeracion_rapida(self):
 		print('[*] - Enumerando rápidamente la red ({rango} {argumento})'.format(rango=self.rango, argumento='-sP'))
@@ -93,14 +90,16 @@ class Escaner():
 					except Exception as e:
 						datos.append({'error' : 'Algo ha salido mal'})
 			datos_completo.append({h : datos})
-		return jsonify(datos_completo)
+		return datos_completo
 
 	def escanear_host_tcp_banner_grabbing(self, host, port):
 		banner = ''
 		try:
-			conexion=socket.socket()
-			conexion.settimeout(30)
+			conexion=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			conexion.settimeout(1)
+			proto = 'tcp'
 			conexion.connect((host, int(port)))
+			conexion.send("GET / HTTP/1.0\r\nHost: " + host + "\r\n\r\n")
 			banner = conexion.recv(1024)
 			# Devolvemos decodificada para evitar b'' como string y quitamos el salto de línea posible
 			banner = str(banner, 'utf-8', 'ignore').split('\n')[0].rstrip('\r')

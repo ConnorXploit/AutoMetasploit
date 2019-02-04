@@ -22,9 +22,9 @@ $(document).ready(function() {
 	function callPython(rangoIP, parametros, metodo){
 		$.ajax({
 			data : {
-				rangoIP : rangoIP,
-				params : parametros,
-				metodo : metodo
+				'rangoIP' : rangoIP,
+				'params' : parametros,
+				'metodo' : metodo
 			},
 			type : 'POST',
 			url : 'http://localhost:5000/nmap',
@@ -36,15 +36,7 @@ $(document).ready(function() {
 				$('#successAlert').hide();
 				$('#infoAlert').hide();
 			} else {
-				$('#successAlert').text($('#successAlert').text() + data.domain).show();
-				datos = JSON.parse(data.domain.split("\n")[0]);
-				
-				// Subdominios?
-				if(datos["subdomains_"+dominio])
-					for(subDom in datos["subdomains_"+dominio])
-						if(datos["subdomains_"+dominio][subDom]["domain"] != "")
-							callPython(datos["subdomains_"+dominio][subDom]["domain"], metodo)
-
+				$('#successAlert').text($('#successAlert').text() + JSON.stringify(data)).show();
 				$('#errorAlert').hide();
 				$('#infoAlert').hide();
 			}

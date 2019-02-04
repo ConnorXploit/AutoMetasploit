@@ -115,8 +115,16 @@ def nmap():
 			ip = request.args.get('rangoIP')
 			params = request.args.get('params')
 			metodo = request.args.get('metodo')
-		if ip != '':
-			escaner = Escaner(ip, params)
+		if metodo != '':
+			if ip != '' and params != '':
+				escaner = Escaner(rango=ip, params=params)
+			else:
+				if ip != '':
+					escaner = Escaner(rango=ip)
+				elif params != '':
+					escaner = Escaner(params=params)
+				else:
+					escaner = Escaner()
 			if metodo == 'enumeracion_rapida':
 				hosts = escaner.enumeracion_rapida()
 			elif metodo == 'escanear_host_completo':
@@ -135,7 +143,7 @@ def nmap():
 				hosts = escaner.escanear_todo()
 			else:
 				hosts = {'error_else_2' : 'Metodo no definido'}
-			return hosts
+			return jsonify({'datos' : hosts})
 		else:
 			return jsonify({"error_else_1" : "Falta la ip!"})
 	except Exception as e:
