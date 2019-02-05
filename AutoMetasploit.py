@@ -110,10 +110,12 @@ def nmap():
 		try:
 			ip = request.form['rangoIP']
 			params = request.form['params']
+			puerto = request.form['puerto']
 			metodo = request.form['metodo']
 		except:
 			ip = request.args.get('rangoIP')
 			params = request.args.get('params')
+			puerto = request.args.get('puerto')
 			metodo = request.args.get('metodo')
 		if metodo != '':
 			if ip != '' and params != '':
@@ -139,6 +141,8 @@ def nmap():
 				hosts = escaner.escanear_host_tcp(host=ip)
 			elif metodo == 'escanear_host_udp':
 				hosts = escaner.escanear_host_udp(host=ip)
+			elif metodo == 'escanear_host_tcp_banner_grabbing':
+				hosts = escaner.escanear_host_tcp_banner_grabbing(host=ip, port=puerto)
 			elif metodo == 'escanear_todo':
 				hosts = escaner.escanear_todo()
 			else:

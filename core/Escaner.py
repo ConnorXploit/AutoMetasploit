@@ -62,9 +62,14 @@ class Escaner():
 			print(nm)
 
 	def escanear_host_con_parametros(self, host, parametros):
+		if not host and self.rango:
+			host = self.rango
+		if not parametros and self.params:
+			parametros = self.params
 		print('[*] - Escaneo con Parámetros ({host} {param})'.format(host=host, param=parametros))
 		nm = nmap.PortScanner()
 		nm.scan(hosts=host, arguments=parametros)
+		#print(nm.csv())
 		datos_completo = []
 		for h in nm.all_hosts():
 			datos = []
@@ -81,11 +86,26 @@ class Escaner():
 					puertos_abiertos = []
 					try:
 						for port in lport:
-							servicio = '-'
+							banner = '-'
 							if nm[h][proto][port]['state'] == 'open':
+								datos_puerto = []
 								if proto == 'tcp':
-									servicio = self.escanear_host_tcp_banner_grabbing(host=h, port=port)
-								puertos_abiertos.append({port : servicio})
+									banner = self.escanear_host_tcp_banner_grabbing(host=h, port=port)
+								if banner != '':
+									datos_puerto.append({'banner' : banner})
+								if nm[h][proto][port]['name']:
+									datos_puerto.append({'servicio' : nm[h][proto][port]['name']})
+								if nm[h][proto][port]['product']:
+									datos_puerto.append({'producto' : nm[h][proto][port]['product']})
+								if nm[h][proto][port]['extrainfo']:
+									datos_puerto.append({'extrainfo' : nm[h][proto][port]['extrainfo']})
+								if nm[h][proto][port]['version']:
+									datos_puerto.append({'version' : nm[h][proto][port]['version']})
+								if nm[h][proto][port]['conf']:
+									datos_puerto.append({'conf' : nm[h][proto][port]['conf']})
+								if nm[h][proto][port]['cpe']:
+									datos_puerto.append({'cpe' : nm[h][proto][port]['cpe']})
+								puertos_abiertos.append({port : datos_puerto})
 						datos.append({proto : puertos_abiertos})
 					except Exception as e:
 						datos.append({'error' : 'Algo ha salido mal'})
@@ -96,10 +116,8 @@ class Escaner():
 		banner = ''
 		try:
 			conexion=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			conexion.settimeout(1)
-			proto = 'tcp'
+			conexion.settimeout(2)
 			conexion.connect((host, int(port)))
-			conexion.send("GET / HTTP/1.0\r\nHost: " + host + "\r\n\r\n")
 			banner = conexion.recv(1024)
 			# Devolvemos decodificada para evitar b'' como string y quitamos el salto de línea posible
 			banner = str(banner, 'utf-8', 'ignore').split('\n')[0].rstrip('\r')

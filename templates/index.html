@@ -14,32 +14,40 @@
 </head>
 <body>
 <div class="container">
-	<br><br><br><br>
+	<br>
 	<form class="form-inline" id="formInfoGath">
 	  	<div class="form-group">
-		    <label class="sr-only" for="rangoIPInput">IP</label>
+		    <label for="rangoIPInput">IP</label><br>
 		    <input type="text" class="form-control" id="rangoIPInput" placeholder="192.168.1.0/24">
 	  	</div>
 	  	<div class="form-group">
-		    <label class="sr-only" for="parametros">IP</label>
+		    <label for="parametros">Parametros</label><br>
 		    <input type="text" class="form-control" id="parametros" placeholder="-sV -T4">
 	  	</div>
-		<br>
-		<input type="radio" name="metodo" value="all" id="method_ALL" checked> ALL <br>
-		<input type="radio" name="metodo" value="enumeracion_rapida" id="method_enumeracion_rapida" checked> enumeracion_rapida <br>
-		<input type="radio" name="metodo" value="escanear_host_completo" id="method_escanear_host_completo"> escanear_host_completo <br>
-		<input type="radio" name="metodo" value="escanear_host_con_parametros" id="method_escanear_host_con_parametros"> escanear_host_con_parametros <br>
-		<input type="radio" name="metodo" value="escanear_host_name" id="method_escanear_host_name"> escanear_host_name <br>
-		<input type="radio" name="metodo" value="escanear_host_os" id="method_escanear_host_os"> escanear_host_os <br>
-		<input type="radio" name="metodo" value="escanear_host_tcp" id="method_escanear_host_tcp"> escanear_host_tcp <br>
-		<input type="radio" name="metodo" value="escanear_host_udp" id="method_escanear_host_udp"> escanear_host_udp <br>
-		<input type="radio" name="metodo" value="escanear_todo" id="method_escanear_todo"> escanear_todo<br>
+	  	<div class="form-group">
+		    <label for="puerto">Puerto</label><br>
+		    <input type="text" class="form-control" id="puerto" placeholder="22">
+	  	</div>
+		<br><br>
+		<label for="metodo">Selecciona una funcion</label><br>
+		<select class="form-control" id="metodo">
+			<option>ALL</option>
+			<option selected>enumeracion_rapida</option>
+			<option>escanear_host_completo</option>
+			<option>escanear_host_con_parametros</option>
+			<option>escanear_host_name</option>
+			<option>escanear_host_os</option>
+			<option>escanear_host_tcp</option>
+			<option>escanear_host_udp</option>
+			<option>escanear_host_tcp_banner_grabbing</option>
+			<option>escanear_todo</option>
+		</select><br><br>
 	  	<button type="submit" class="btn btn-default">Escanear</button>
 	</form>
 	<br>
-	<div id="successAlert" class="alert alert-success" role="alert" style="display:none;"></div>
 	<div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
 	<div id="infoAlert" class="alert alert-info" role="alert" style="display:none;"></div>
+	<div id="successAlert1" class="alert alert-success" role="alert" style="display:none;"></div>
 </div>
 </body>
 </html>
