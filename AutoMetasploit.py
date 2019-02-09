@@ -101,22 +101,35 @@ class AutoMetasploit():
 @app.route('/')
 def index():
 	script = AutoMetasploit()
+	interfaces = Interfaces()
+	inter=script.configInterfaces.interfaces_mi_pc
 	print('Iniciando AutoMetasploit Web: http://localhost:5000/')
-	return render_template('index.html')
+	return render_template('index.html', interfaces=inter)
 
 @app.route('/nmap', methods=['POST'])
 def nmap():
 	try:
 		try:
+			interfaz = request.form['interfaz']
+			dispositivo = request.form['dispositivo']
 			ip = request.form['rangoIP']
 			params = request.form['params']
 			puerto = request.form['puerto']
 			metodo = request.form['metodo']
 		except:
+			interfaz = request.args.get('interfaz')
+			dispositivo = request.args.get('dispositivo')
 			ip = request.args.get('rangoIP')
 			params = request.args.get('params')
 			puerto = request.args.get('puerto')
 			metodo = request.args.get('metodo')
+
+		if interfaz != '' and metodo == 'enumeracion_rapida':
+			ip = interfaz
+		
+		if dispositivo != '' and ip == '' and metodo != 'enumeracion_rapida':
+			ip = dispositivo
+
 		if metodo != '':
 			if ip != '' and params != '':
 				escaner = Escaner(rango=ip, params=params)
@@ -147,7 +160,7 @@ def nmap():
 				hosts = escaner.escanear_todo()
 			else:
 				hosts = {'error_else_2' : 'Metodo no definido'}
-			return jsonify({'datos' : hosts})
+			return jsonify({'datos' : {metodo : hosts}})
 		else:
 			return jsonify({"error_else_1" : "Falta la ip!"})
 	except Exception as e:

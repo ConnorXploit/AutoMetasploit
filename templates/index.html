@@ -16,6 +16,26 @@
 <div class="container">
 	<br>
 	<form class="form-inline" id="formInfoGath">
+		{% if interfaces %}
+			<script>
+				{% for inter in interfaces %}
+					listaInterfaces.push('{{inter}}')
+				{% endfor %}
+			</script>
+			<div class="form-group">
+				<label for="interfaz">Interfaz</label><br>
+				<select class="form-control" id="interfaz">
+				<option></option>
+				{% for inter in interfaces %}
+					<option>{{inter}}</option>
+				{% endfor %}
+				</select>
+	  		</div>
+		{% endif %}
+		<div class="form-group">
+			<label for="dispositivo">Dispositivos</label><br>
+			<select class="form-control" id="dispositivo" style="min-width: 120px"></select>
+		</div>
 	  	<div class="form-group">
 		    <label for="rangoIPInput">IP</label><br>
 		    <input type="text" class="form-control" id="rangoIPInput" placeholder="192.168.1.0/24">
@@ -31,7 +51,7 @@
 		<br><br>
 		<label for="metodo">Selecciona una funcion</label><br>
 		<select class="form-control" id="metodo">
-			<option>ALL</option>
+			<option>all</option>
 			<option selected>enumeracion_rapida</option>
 			<option>escanear_host_completo</option>
 			<option>escanear_host_con_parametros</option>

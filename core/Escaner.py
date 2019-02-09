@@ -38,28 +38,19 @@ class Escaner():
 		print('[*] - Escaneando host completo ({host})'.format(host=host))
 		nm = nmap.PortScanner()
 		nm.scan(host, arguments='-A')
-		try:
-			print(nm[host])
-		except:
-			print(nm)
+		print(nm.csv())
 
 	def escanear_host_os(self, host):
 		print('[*] - Buscando versión de SO ({host})'.format(host=host))
 		nm = nmap.PortScanner()
 		nm.scan(host, arguments='-O')
-		try:
-			print(nm[host])
-		except:
-			print(nm)
+		print(nm.csv())
 
 	def escanear_host_name(self, host):
 		print('[*] - Buscando nombre del dispositivo ({host})'.format(host=host))
 		nm = nmap.PortScanner()
 		nm.scan(host, arguments='-sL')
-		try:
-			print(nm[host])
-		except:
-			print(nm)
+		print(nm.csv())
 
 	def escanear_host_con_parametros(self, host, parametros):
 		if not host and self.rango:

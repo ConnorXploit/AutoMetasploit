@@ -1,3 +1,6 @@
+listaInterfaces = []
+listaDispositivos = []
+
 $(document).ready(function() {
 
 	$("input[type='text']").click(function () {
@@ -27,17 +30,19 @@ $(document).ready(function() {
 			$('#successAlert1').text("");
 			$('#successAlert1').hide();
 			$('#errorAlert').hide();
-			rangoIP=$('#rangoIPInput').val()
-			params=$('#parametros').val()
-			puerto=$('#puerto').val()
-			meth=$('#metodo').children("option:selected").val()
+			interfaz=$('#interfaz').val();
+			dispositivo=$('#dispositivo').val();
+			rangoIP=$('#rangoIPInput').val();
+			params=$('#parametros').val();
+			puerto=$('#puerto').val();
+			meth=$('#metodo').children("option:selected").val();
 			$('#infoAlert').text("Cargando: " + meth).show();
 			if(meth == 'all'){
 				metodos = ["enumeracion_rapida","escanear_host_completo","escanear_host_con_parametros","escanear_host_name","escanear_host_os","escanear_host_tcp","escanear_host_udp","escanear_host_tcp_banner_grabbing","escanear_todo"];
 				for(m in metodos)
-					callPython(rangoIP, params, puerto, metodos[m])
+					callPython(interfaz, dispositivo, rangoIP, params, puerto, metodos[m])
 			} else {
-				callPython(rangoIP, params, puerto, meth)
+				callPython(interfaz, dispositivo, rangoIP, params, puerto, meth)
 			}
 		}
 		catch(error) {
@@ -45,11 +50,22 @@ $(document).ready(function() {
 		}
 	});
 
-	function callPython(rangoIP, parametros, puerto, metodo){
+	function crearComboDispositivos(lista){
+		$("#dispositivo").append(new Option('', ''));
+		for(dispo in lista){
+			if(!listaDispositivos.includes(lista[dispo]))
+				listaDispositivos.push(lista[dispo])
+				$("#dispositivo").append(new Option(lista[dispo], lista[dispo]));
+		}
+	}
+
+	function callPython(interfaz, dispositivo, rangoIP, parametros, puerto, metodo){
 		var $div = $('div[id^="successAlert"]:last');
 		var num = parseInt( $div.prop("id").match(/\d+/g), 10 ) +1;
 		$.ajax({
 			data : {
+				'interfaz' : interfaz,
+				'dispositivo' : dispositivo,
 				'rangoIP' : rangoIP,
 				'params' : parametros,
 				'puerto' : puerto,
@@ -61,11 +77,15 @@ $(document).ready(function() {
 		})
 		.done(function(data) {
 			if (data.error) {
-				$('#errorAlert').text(data.error).show();
+				$('#errorAlert').html(data.error).show();
 				$('#successAlert1').hide();
 				$('#infoAlert').hide();
 			} else {
-				$('#successAlert1').text($('#successAlert1').text() + JSON.stringify(data)).show();
+				if(data.datos['enumeracion_rapida']){
+					crearComboDispositivos(data.datos['enumeracion_rapida'])
+				}
+				$('#successAlert1').html($('#successAlert1').html() + JSON.stringify(data, undefined, 2));
+				$('#successAlert1').show();
 				$('#errorAlert').hide();
 				$('#infoAlert').hide();
 			}
