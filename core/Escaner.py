@@ -80,7 +80,7 @@ class Escaner():
 							banner = '-'
 							if nm[h][proto][port]['state'] == 'open':
 								datos_puerto = []
-								if proto == 'tcp':
+								if proto == 'tcp' and not '--script=banner' in parametros:
 									banner = self.escanear_host_tcp_banner_grabbing(host=h, port=port)
 								if banner != '':
 									datos_puerto.append({'banner' : banner})
@@ -117,6 +117,8 @@ class Escaner():
 			#return banner
 		except Exception as e:
 			banner = '?'
+		if banner == '?':
+			banner = self.escanear_host_con_parametros(host, '-p {} -sV --script=banner'.format(port))
 		return banner
 
 	def escanear_host_tcp(self, host):
