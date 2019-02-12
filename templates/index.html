@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spur.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/chart-js-config.js') }}"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="{{ url_for('static', filename='js/form.js') }}"></script>
 </head>
 <body>
@@ -17,27 +17,67 @@
 	<main class="dash-content">
 		<div class="container-fluid">
 			<h1 class="dash-title">Forms</h1>
-			<div class="row">
-				<div class="col-xl-6">
+			<div>
+				<div class="col-xl-12">
 					<div class="card spur-card">
 						<div class="card-header">
 							<div class="spur-card-icon">
 								<i class="fas fa-chart-bar"></i>
 							</div>
-							<div class="spur-card-title"> Inline Form </div>
+							<div class="spur-card-title"> Escanear </div>
 						</div>
 						<div class="card-body ">
-							<form class="form-inline">
-								<div class="form-group mb-2">
-									<label for="staticEmail2" class="sr-only">Email</label>
-									<input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
-								</div>
-								<div class="form-group mx-sm-3 mb-2">
-									<label for="inputPassword2" class="sr-only">Password</label>
-									<input type="password" class="form-control" id="inputPassword2" placeholder="Password">
-								</div>
-								<button type="submit" class="btn btn-primary mb-2">Confirm identity</button>
-							</form>
+                            <form class="form-inline" id="formInfoGath">
+                                {% if interfaces %}
+                                    <script>
+                                        {% for inter in interfaces %}
+                                            listaInterfaces.push('{{inter}}')
+                                        {% endfor %}
+                                    </script>
+                                    <div class="form-group col-sm">
+                                        <label for="interfaz">Interfaces</label><br>
+                                        <select class="form-control mx-sm-3 mb-2" id="interfaz">
+                                        <option></option>
+                                        {% for inter in interfaces %}
+                                            <option>{{inter}}</option>
+                                        {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                <div class="form-group col-sm">
+                                    <label for="dispositivo">Dispositivos</label><br>
+                                    <select class="form-control mx-sm-3 mb-2" id="dispositivo"></select>
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="rangoIPInput">IP</label><br>
+                                    <input type="text" class="form-control mx-sm-3 mb-2" id="rangoIPInput" placeholder="192.168.1.0/24">
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="parametros">Parametros</label><br>
+                                    <input type="text" class="form-control mx-sm-3 mb-2" id="parametros" placeholder="-sV -T4">
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="puerto">Puerto</label><br>
+                                    <input type="text" class="form-control mx-sm-3 mb-2" id="puerto" placeholder="22">
+                                </div>
+                                <div class="form-group col-sm">
+                                    <label for="metodo">Selecciona una funcion</label><br>
+                                    <select class="form-control mx-sm-3 mb-2" id="metodo">
+                                        <option>all</option>
+                                        <option selected>enumeracion_rapida</option>
+                                        <option>escanear_host_completo</option>
+                                        <option>escanear_host_con_parametros</option>
+                                        <option>escanear_host_name</option>
+                                        <option>escanear_host_os</option>
+                                        <option>escanear_host_tcp</option>
+                                        <option>escanear_host_udp</option>
+                                        <option>escanear_host_tcp_banner_grabbing</option>
+                                        <option>escanear_todo</option>
+                                    </select>
+                                </div>
+                                <br><br>
+                                <button type="submit" class="btn btn-primary mb-2">Escanear</button>
+                            </form>
 						</div>
 					</div>
 				</div>
@@ -45,55 +85,7 @@
 		</div>
 	</main>
 	<br>
-	<form class="form-inline" id="formInfoGath">
-		{% if interfaces %}
-			<script>
-				{% for inter in interfaces %}
-					listaInterfaces.push('{{inter}}')
-				{% endfor %}
-			</script>
-			<div class="form-group">
-				<label for="interfaz">Interfaz</label><br>
-				<select class="form-control" id="interfaz">
-				<option></option>
-				{% for inter in interfaces %}
-					<option>{{inter}}</option>
-				{% endfor %}
-				</select>
-	  		</div>
-		{% endif %}
-		<div class="form-group">
-			<label for="dispositivo">Dispositivos</label><br>
-			<select class="form-control" id="dispositivo" style="min-width: 120px"></select>
-		</div>
-	  	<div class="form-group">
-		    <label for="rangoIPInput">IP</label><br>
-		    <input type="text" class="form-control" id="rangoIPInput" placeholder="192.168.1.0/24">
-	  	</div>
-	  	<div class="form-group">
-		    <label for="parametros">Parametros</label><br>
-		    <input type="text" class="form-control" id="parametros" placeholder="-sV -T4">
-	  	</div>
-	  	<div class="form-group">
-		    <label for="puerto">Puerto</label><br>
-		    <input type="text" class="form-control" id="puerto" placeholder="22">
-	  	</div>
-		<br><br>
-		<label for="metodo">Selecciona una funcion</label><br>
-		<select class="form-control" id="metodo">
-			<option>all</option>
-			<option selected>enumeracion_rapida</option>
-			<option>escanear_host_completo</option>
-			<option>escanear_host_con_parametros</option>
-			<option>escanear_host_name</option>
-			<option>escanear_host_os</option>
-			<option>escanear_host_tcp</option>
-			<option>escanear_host_udp</option>
-			<option>escanear_host_tcp_banner_grabbing</option>
-			<option>escanear_todo</option>
-		</select><br><br>
-	  	<button type="submit" class="btn btn-default">Escanear</button>
-	</form>
+	
 	<br>
 	<div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
 	<div id="infoAlert" class="alert alert-info" role="alert" style="display:none;"></div>
