@@ -98,7 +98,7 @@ class Escaner():
 									datos_puerto.append({'cpe' : nm[h][proto][port]['cpe']})
 								puertos_abiertos.append({port : datos_puerto})
 						datos.append({proto : puertos_abiertos})
-					except Exception as e:
+					except Exception:
 						datos.append({'error' : 'Algo ha salido mal'})
 			datos_completo.append({h : datos})
 		return datos_completo
