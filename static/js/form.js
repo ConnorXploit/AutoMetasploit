@@ -10,7 +10,7 @@ $(document).ready(function() {
 	$('form').on('submit', function(event) { // Esto ordena correctamente las notificaciones y mantiene guardadas todas las "successAlert"
 		event.preventDefault();
 		try {
-			if($('#successAlert1').text() != ''){
+			if($('#successAlert1').find('#cuerpoMensaje').text() != ''){
 				var $divOriginal = $('#successAlert1');
 				var $div = $('div[id^="successAlert"]')[1];
 				if(typeof($div) == 'undefined'){
@@ -25,9 +25,10 @@ $(document).ready(function() {
 				var $div = $('div[id^="successAlert'+(num-1)+'"]')
 
 				var $klon = $div.clone().prop('id', 'successAlert'+num );
-				$divOriginal.after( $klon.text($('#successAlert1').text()) );
+				$divOriginal.after( $klon.html($('#successAlert1').html()) );
 			}
-			$('#successAlert1').text("");
+			$('#successAlert1').find('#titulo').text("");
+			$('#successAlert1').find('#cuerpoMensaje').text("");
 			$('#successAlert1').hide();
 			$('#errorAlert').hide();
 			interfaz=$('#interfaz').val();
@@ -36,7 +37,20 @@ $(document).ready(function() {
 			params=$('#parametros').val();
 			puerto=$('#puerto').val();
 			meth=$('#metodo').children("option:selected").val();
-			$('#infoAlert').text("Cargando: " + meth).show();
+			$('#infoAlert').show();
+			$('#infoAlert').find('#titulo').text("Cargando: " + meth);
+			mensaje = '<br />'
+			if(interfaz)
+				mensaje+='\t- Interfaz: <b>' + interfaz + '</b><br />';
+			if(dispositivo)
+				mensaje+='\t- Dispositivo: <b>' + dispositivo + '</b><br />';
+			if(rangoIP)
+				mensaje+='\t- IP o Rango de IPs: <b>' + rangoIP + '</b><br />';
+			if(params)
+				mensaje+='\t- Parámetros: <b>' + params + '</b><br />';
+			if(puerto)
+				mensaje+='\t- Puerto: <b>' + puerto + '</b><br />';
+			$('#infoAlert').find('#cuerpoMensaje').html("Parámetros enviados: " + mensaje);
 			if(meth == 'all'){
 				metodos = ["enumeracion_rapida","escanear_host_completo","escanear_host_con_parametros","escanear_host_name","escanear_host_os","escanear_host_tcp","escanear_host_udp","escanear_host_tcp_banner_grabbing","escanear_todo"];
 				for(m in metodos)
@@ -84,7 +98,13 @@ $(document).ready(function() {
 				if(data.datos['enumeracion_rapida']){
 					crearComboDispositivos(data.datos['enumeracion_rapida'])
 				}
-				$('#successAlert1').html($('#successAlert1').html() + JSON.stringify(data, undefined, 2));
+				metodoLlamado = ''
+				for (metodo in data.datos) {
+					metodoLlamado = metodo
+				}
+				$('#successAlert1').find('#titulo').text(metodoLlamado);
+				$('#successAlert1').find('#cuerpoMensaje').text(JSON.stringify(data, undefined, 2));
+				$('#successAlert1').find('#cuerpoMensaje').html($('#successAlert1').find('#cuerpoMensaje').html() + '<hr>' + $('#infoAlert').find('#cuerpoMensaje').html());
 				$('#successAlert1').show();
 				$('#errorAlert').hide();
 				$('#infoAlert').hide();

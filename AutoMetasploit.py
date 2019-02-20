@@ -103,7 +103,6 @@ def index():
 	script = AutoMetasploit()
 	interfaces = Interfaces()
 	inter=script.configInterfaces.interfaces_mi_pc
-	print('Iniciando AutoMetasploit Web: http://localhost:5000/')
 	return render_template('index.html', interfaces=inter)
 
 @app.route('/nmap', methods=['POST'])
