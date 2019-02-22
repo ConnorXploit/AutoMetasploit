@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600|Open+Sans:400,600,700" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/spur.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/chart-js-config.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -25,7 +26,7 @@
 							<div class="spur-card-icon">
 								<i class="fas fa-chart-bar"></i>
 							</div>
-							<div class="spur-card-title"> Escanear </div>
+							<button id="escanear" type="submit" class="btn btn-primary">Escanear</button>
 						</div>
 						<div class="card-body ">
                             <form class="form-inline" id="formInfoGath">
@@ -55,7 +56,7 @@
                                 </div>
                                 <div class="form-group col-sm">
                                     <label for="parametros">Parametros</label><br>
-                                    <input type="text" class="form-control mx-sm-3 mb-2" id="parametros" placeholder="-sV -T4">
+                                    <input type="text" class="form-control mx-sm-3 mb-2" id="parametros" placeholder="{{params_default_nmap}}">
                                 </div>
                                 <div class="form-group col-sm">
                                     <label for="puerto">Puerto</label><br>
@@ -76,38 +77,79 @@
                                         <option>escanear_todo</option>
                                     </select>
                                 </div>
+                                {% if params_all_nmap %}
+                                    <div id="accordion" class="col-md-12">
+                                        {% for tipoparam in params_all_nmap %}
+                                            <div class="card">
+                                                <div class="card-header" id="heading{{ loop.index }}">
+                                                    <h5 class="mb-0">
+                                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                                                            {{tipoparam}}
+                                                        </button>
+                                                    </h5>
+                                                </div>
+                                                <div id="collapse{{ loop.index }}" class="collapse" aria-labelledby="heading{{ loop.index }}" data-parent="#accordion">
+                                                    <div class="card-body">
+                                                        <table class="table table-bordered table-sm m-0">
+                                                            <thead class="">
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>Parámetro</th>
+                                                                    <th>Información</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for param in params_all_nmap[tipoparam] %}
+                                                                    <tr>
+                                                                        <td>
+                                                                            <label class="custom-control custom-checkbox">
+                                                                                <input type="checkbox" class="custom-control-input">
+                                                                                <span class="custom-control-indicator"></span>
+                                                                            </label>
+                                                                        </td>
+                                                                        <td>{{param}}</td>
+                                                                        <td>{{params_all_nmap[tipoparam][param]}}</td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                                 <br><br>
-                                <button type="submit" class="btn btn-primary mb-2">Escanear</button>
                             </form>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+            <div>
+                <div class="col-xl-12">
+                    <div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
+                    <div id="infoAlert" class="card spur-card" style="display:none;">
+                        <div class="card-header bg-primary text-white">
+                            <div class="spur-card-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div id="titulo" class="spur-card-title"> CargandoMetodo </div>
+                        </div>
+                        <div id="cuerpoMensaje" class="card-body "></div>
+                    </div>
+                    <div id="successAlert1" class="card spur-card" style="display:none;">
+                        <div class="card-header bg-success text-white">
+                            <div class="spur-card-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div id="titulo" class="spur-card-title"> NombreMetodo </div>
+                        </div>
+                        <div id="cuerpoMensaje" class="card-body "></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 	</main>
-	<br>
-	
-	<br>
-	<div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;"></div>
-    <div id="infoAlert" class="card spur-card" style="display:none;">
-        <div class="card-header bg-primary text-white">
-            <div class="spur-card-icon">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <div id="titulo" class="spur-card-title"> CargandoMetodo </div>
-        </div>
-        <div id="cuerpoMensaje" class="card-body "></div>
-    </div>
-    <div id="successAlert1" class="card spur-card" style="display:none;">
-        <div class="card-header bg-success text-white">
-            <div class="spur-card-icon">
-                <i class="fas fa-chart-bar"></i>
-            </div>
-            <div id="titulo" class="spur-card-title"> NombreMetodo </div>
-        </div>
-        <div id="cuerpoMensaje" class="card-body "></div>
-    </div>
-	<br>
     <!-- Menu lateral y arriba -->
 	<div class="dash">
         <div class="dash-nav dash-nav-dark">

@@ -49,6 +49,16 @@ class AutoMetasploit():
 		self.parametros_nmap = self.configNmap.PARAMETROS
 		self.parametros_obligatorios_nmap = self.configNmap.PARAMETROS_OBLIGATORIOS
 		self.parametros_predefinidos_nmap = self.configNmap.FIJOS
+		self.parametros_nmap_completo = {}
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[0]] = self.configNmap.PARAMETROS_DESCUBRIR_SISTEMAS
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[1]] = self.configNmap.PARAMETROS_ANALISIS_PUERTOS
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[2]] = self.configNmap.PARAMETROS_PUERTOS_A_ANALIZAR
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[3]] = self.configNmap.PARAMETROS_DURACION_EJECUCION
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[4]] = self.configNmap.PARAMETROS_SERVICIOS_Y_VERSIONES
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[5]] = self.configNmap.PARAMETROS_EVADIR_FW_Y_IDS
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[6]] = self.configNmap.PARAMETROS_OTRAS_OPCIONES
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[7]] = self.configNmap.PARAMETROS_OPCIONES_INTERACTIVAS
+		self.parametros_nmap_completo[self.configNmap.TIPOS_ESCANEOS[8]] = self.configNmap.PARAMETROS_SCRIPTS
 
 		# Variables finales necesarias para conjugacion de datos
 		self.interfaces_selec = []
@@ -103,7 +113,7 @@ def index():
 	script = AutoMetasploit()
 	interfaces = Interfaces()
 	inter=script.configInterfaces.interfaces_mi_pc
-	return render_template('index.html', interfaces=inter)
+	return render_template('index.html', interfaces=inter, params_default_nmap=' '.join(script.configNmap.FIJOS), params_all_nmap=script.parametros_nmap_completo)
 
 @app.route('/nmap', methods=['POST'])
 def nmap():

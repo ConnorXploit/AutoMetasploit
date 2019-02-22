@@ -7,7 +7,11 @@ $(document).ready(function() {
 		$(this).select();
 	});
 
-	$('form').on('submit', function(event) { // Esto ordena correctamente las notificaciones y mantiene guardadas todas las "successAlert"
+	$("button").click(function (event) {
+		event.preventDefault();
+	});
+
+	$("#escanear").click(function(event) { // Esto ordena correctamente las notificaciones y mantiene guardadas todas las "successAlert"
 		event.preventDefault();
 		try {
 			if($('#successAlert1').find('#cuerpoMensaje').text() != ''){
