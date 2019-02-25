@@ -35,10 +35,7 @@ class Escaner():
 		return hosts
 
 	def escanear_host_completo(self, host):
-		print('[*] - Escaneando host completo ({host})'.format(host=host))
-		nm = nmap.PortScanner()
-		nm.scan(host, arguments='-A')
-		print(nm.csv())
+		return self.escanear_host_con_parametros(host=host, parametros='-A')
 
 	def escanear_host_os(self, host):
 		print('[*] - Buscando versión de SO ({host})'.format(host=host))
