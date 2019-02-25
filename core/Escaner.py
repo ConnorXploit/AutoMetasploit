@@ -28,9 +28,9 @@ class Escaner():
 		return datos
 
 	def enumeracion_rapida(self):
-		print('[*] - Enumerando rápidamente la red ({rango} {argumento})'.format(rango=self.rango, argumento='-sP'))
+		print('[*] - Enumerando rápidamente la red ({rango} {argumento})'.format(rango=self.rango, argumento='-T4 -n -sn'))
 		nm = nmap.PortScanner()
-		nm.scan(hosts=self.rango, arguments='-sP')
+		nm.scan(hosts=self.rango, arguments='-T4 -n -sn')
 		hosts = nm.all_hosts()
 		return hosts
 

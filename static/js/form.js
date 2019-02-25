@@ -103,11 +103,13 @@ $(document).ready(function() {
 					crearComboDispositivos(data.datos['enumeracion_rapida'])
 				}
 				metodoLlamado = ''
+				respuesta = ''
 				for (metodo in data.datos) {
 					metodoLlamado = metodo
+					respuesta = data.datos[metodo]
 				}
 				$('#successAlert1').find('#titulo').text(metodoLlamado);
-				$('#successAlert1').find('#cuerpoMensaje').text(JSON.stringify(data, undefined, 2));
+				$('#successAlert1').find('#cuerpoMensaje').text(JSON.stringify(respuesta, undefined, 2));
 				$('#successAlert1').find('#cuerpoMensaje').html($('#successAlert1').find('#cuerpoMensaje').html() + '<hr>' + $('#infoAlert').find('#cuerpoMensaje').html());
 				$('#successAlert1').show();
 				$('#errorAlert').hide();
